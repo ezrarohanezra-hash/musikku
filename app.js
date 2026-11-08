@@ -143,6 +143,71 @@ document.addEventListener("keydown", (e) => {
   if (e.code === "Space") { e.preventDefault(); toggle(); }
 });
 
+/* ---------- Warna tampilan mengikuti foto ---------- */
+let tokenTema = 0;
+const KUNCI_TEMA = ["--bg", "--surface", "--surface2", "--aksen", "--aksen-teks"];
+function rgbKeHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  let h = 0, s = 0;
+  const l = (mx + mn) / 2;
+  if (d) {
+    s = d / (1 - Math.abs(2 * l - 1));
+    if (mx === r) h = ((g - b) / d) % 6;
+    else if (mx === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h = (h * 60 + 360) % 360;
+  }
+  return [Math.round(h), Math.round(s * 100), Math.round(l * 100)];
+}
+async function warnaDominan(blob) {
+  const bmp = await createImageBitmap(blob);
+  const c = document.createElement("canvas");
+  c.width = c.height = 32;
+  const x = c.getContext("2d", { willReadFrequently: true });
+  x.drawImage(bmp, 0, 0, 32, 32);
+  const d = x.getImageData(0, 0, 32, 32).data;
+  let R = 0, G = 0, B = 0, W = 0;
+  for (let i = 0; i < d.length; i += 4) {
+    const r = d[i], g = d[i + 1], b = d[i + 2];
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+    const sat = mx === 0 ? 0 : (mx - mn) / mx;
+    const terang = (mx + mn) / 510;
+    // utamakan piksel yang berwarna dan tidak terlalu gelap/terang
+    const w = sat * sat * (1 - Math.abs(terang - 0.5) * 1.6) + 0.001;
+    R += r * w; G += g * w; B += b * w; W += w;
+  }
+  return rgbKeHsl(R / W, G / W, B / W);
+}
+function setTemaMeta(warna) {
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.content = warna;
+}
+async function terapkanTema(blob) {
+  const id = ++tokenTema;
+  const root = document.documentElement.style;
+  if (!blob) {
+    KUNCI_TEMA.forEach((k) => root.removeProperty(k));
+    setTemaMeta("#16213e");
+    return;
+  }
+  try {
+    const [h, s] = await warnaDominan(blob);
+    if (id !== tokenTema) return;
+    const sb = s < 8 ? 10 : Math.min(s, 45);
+    const sa = s < 12 ? 15 : Math.max(55, Math.min(s, 90));
+    const bg = `hsl(${h}, ${sb}%, 14%)`;
+    root.setProperty("--bg", bg);
+    root.setProperty("--surface", `hsl(${h}, ${sb}%, 20%)`);
+    root.setProperty("--surface2", `hsl(${h}, ${sb}%, 27%)`);
+    root.setProperty("--aksen", `hsl(${h}, ${sa}%, 64%)`);
+    root.setProperty("--aksen-teks", `hsl(${h}, 60%, 10%)`);
+    setTemaMeta(bg);
+  } catch {
+    KUNCI_TEMA.forEach((k) => root.removeProperty(k));
+  }
+}
+
 /* ---------- Foto lagu & logo ---------- */
 let urlCover = null;
 function tampilCover(l) {
@@ -156,6 +221,7 @@ function tampilCover(l) {
     p.style.backgroundImage = "";
     p.classList.remove("foto");
   }
+  terapkanTema(l && l.cover ? l.cover : null);
 }
 function setMeta(l) {
   if (!("mediaSession" in navigator)) return;
@@ -213,6 +279,26 @@ $("berkasLogo").onchange = async (e) => {
     r.readAsDataURL(b);
   } catch {}
 };
+
+/* ---------- Pemutar layar penuh ---------- */
+const pemutar = document.querySelector(".player");
+function bukaPenuh(buka) {
+  if (pemutar.classList.contains("penuh") === buka) return;
+  pemutar.classList.toggle("penuh", buka);
+  document.body.style.overflow = buka ? "hidden" : "";
+  $("besar").textContent = buka ? "⌄" : "⌃";
+  $("besar").setAttribute("aria-label", buka ? "Perkecil pemutar" : "Perbesar pemutar");
+  if (buka) history.pushState({ penuh: 1 }, "");
+}
+$("besar").onclick = () => {
+  if (pemutar.classList.contains("penuh")) history.back();
+  else bukaPenuh(true);
+};
+document.querySelector(".judul-wrap").onclick = () => bukaPenuh(true);
+window.addEventListener("popstate", () => bukaPenuh(false));
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && pemutar.classList.contains("penuh")) history.back();
+});
 
 /* ---------- Offline ---------- */
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
