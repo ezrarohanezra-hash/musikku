@@ -13,7 +13,7 @@
 <body>
 <div class="app">
   <header class="top">
-    <h1>Musikku</h1>
+    <div class="merek"><button id="logoBtn" class="logo" aria-label="Ganti logo"><img id="logoImg" src="icons/icon-192.png" alt=""></button><h1>Musikku</h1></div>
     <label class="btn tambah">Tambah lagu
       <input id="berkas" type="file" accept="audio/*,.mp3" multiple hidden>
     </label>
@@ -27,7 +27,7 @@
 
   <section class="player" aria-label="Pemutar">
     <div class="info">
-      <div class="piringan" id="piringan" aria-hidden="true"></div>
+      <button class="piringan" id="piringan" aria-label="Ganti foto lagu"></button>
       <div class="judul-wrap">
         <div id="judul" class="judul">Belum ada lagu diputar</div>
         <div id="status" class="status"></div>
@@ -47,6 +47,8 @@
     </div>
   </section>
 </div>
+<input id="berkasCover" type="file" accept="image/*" hidden>
+<input id="berkasLogo" type="file" accept="image/*" hidden>
 <audio id="audio" preload="auto"></audio>
 <script src="app.js"></script>
 </body>

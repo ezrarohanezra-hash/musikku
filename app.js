@@ -24,6 +24,7 @@ async function tx(mode, fn) {
 }
 const semua = () => tx("readonly", (s) => s.getAll());
 const simpan = (o) => tx("readwrite", (s) => s.add(o));
+const ubah = (o) => tx("readwrite", (s) => s.put(o));
 const hapusDb = (id) => tx("readwrite", (s) => s.delete(id));
 
 /* ---------- Util ---------- */
@@ -78,12 +79,8 @@ function putar(i) {
   audio.play().catch(() => {});
   $("judul").textContent = l.nama;
   document.title = l.nama + " · Musikku";
-  if ("mediaSession" in navigator) {
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: l.nama, artist: "Musikku",
-      artwork: [{ src: "icons/icon-512.png", sizes: "512x512", type: "image/png" }],
-    });
-  }
+  tampilCover(l);
+  setMeta(l);
   render();
   document.querySelector(".item.aktif")?.scrollIntoView({ block: "nearest" });
 }
@@ -145,6 +142,77 @@ document.addEventListener("keydown", (e) => {
   if (e.target.tagName === "INPUT") return;
   if (e.code === "Space") { e.preventDefault(); toggle(); }
 });
+
+/* ---------- Foto lagu & logo ---------- */
+let urlCover = null;
+function tampilCover(l) {
+  if (urlCover) { URL.revokeObjectURL(urlCover); urlCover = null; }
+  const p = $("piringan");
+  if (l && l.cover) {
+    urlCover = URL.createObjectURL(l.cover);
+    p.style.backgroundImage = `url("${urlCover}")`;
+    p.classList.add("foto");
+  } else {
+    p.style.backgroundImage = "";
+    p.classList.remove("foto");
+  }
+}
+function setMeta(l) {
+  if (!("mediaSession" in navigator)) return;
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: l.nama, artist: "Musikku",
+    artwork: urlCover
+      ? [{ src: urlCover, sizes: "500x500", type: "image/jpeg" }]
+      : [{ src: "icons/icon-512.png", sizes: "512x512", type: "image/png" }],
+  });
+}
+async function kecilkan(file, maks, tipe) {
+  const bmp = await createImageBitmap(file);
+  const skala = Math.min(1, maks / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas");
+  c.width = Math.round(bmp.width * skala);
+  c.height = Math.round(bmp.height * skala);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  return new Promise((ok) => c.toBlob(ok, tipe, 0.85));
+}
+$("piringan").onclick = () => {
+  if (!tampil[idx]) {
+    $("status").textContent = "Putar satu lagu dulu, lalu ketuk gambar ini";
+    setTimeout(() => ($("status").textContent = ""), 3000);
+    return;
+  }
+  $("berkasCover").click();
+};
+$("berkasCover").onchange = async (e) => {
+  const f = e.target.files[0];
+  e.target.value = "";
+  const l = tampil[idx];
+  if (!f || !l) return;
+  try {
+    l.cover = await kecilkan(f, 500, "image/jpeg");
+    await ubah(l);
+    tampilCover(l);
+    setMeta(l);
+  } catch {
+    $("status").textContent = "Foto tidak bisa dibaca, coba file lain";
+  }
+};
+try { const lg = localStorage.getItem("logo"); if (lg) $("logoImg").src = lg; } catch {}
+$("logoBtn").onclick = () => $("berkasLogo").click();
+$("berkasLogo").onchange = async (e) => {
+  const f = e.target.files[0];
+  e.target.value = "";
+  if (!f) return;
+  try {
+    const b = await kecilkan(f, 192, "image/png");
+    const r = new FileReader();
+    r.onload = () => {
+      $("logoImg").src = r.result;
+      try { localStorage.setItem("logo", r.result); } catch {}
+    };
+    r.readAsDataURL(b);
+  } catch {}
+};
 
 /* ---------- Offline ---------- */
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
