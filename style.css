@@ -47,8 +47,6 @@ main{flex:1;overflow-y:auto;padding:0 20px 16px}
   border:0;padding:0;cursor:pointer;background-size:cover;background-position:center;
 }
 .piringan.foto{box-shadow:0 0 0 3px var(--surface2)}
-.piringan.putar{animation:putar 4s linear infinite}
-@keyframes putar{to{transform:rotate(360deg)}}
 .judul-wrap{min-width:0;flex:1;cursor:pointer}
 .judul{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .status{color:var(--redup);font-size:.8rem;min-height:1em}
@@ -64,7 +62,6 @@ main{flex:1;overflow-y:auto;padding:0 20px 16px}
   .app{height:100vh;padding:0}
   .player{border-radius:20px;margin:0 20px 20px}
 }
-@media (prefers-reduced-motion:reduce){.piringan.putar{animation:none}}
 
 .merek{display:flex;align-items:center;gap:12px}
 .logo{width:40px;height:40px;border-radius:12px;border:0;padding:0;background:var(--surface);cursor:pointer;overflow:hidden}
