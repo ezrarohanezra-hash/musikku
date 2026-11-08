@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Musikku</title>
+<meta name="theme-color" content="#16213e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <h1>Musikku</h1>
+    <label class="btn tambah">Tambah lagu
+      <input id="berkas" type="file" accept="audio/*,.mp3" multiple hidden>
+    </label>
+  </header>
+
+  <main>
+    <input id="cari" type="search" placeholder="Cari lagu" aria-label="Cari lagu">
+    <ul id="daftar" class="daftar"></ul>
+    <p id="kosong" class="kosong" hidden>Belum ada lagu. Tekan “Tambah lagu” dan pilih file MP3 dari perangkatmu.</p>
+  </main>
+
+  <section class="player" aria-label="Pemutar">
+    <div class="info">
+      <div class="piringan" id="piringan" aria-hidden="true"></div>
+      <div class="judul-wrap">
+        <div id="judul" class="judul">Belum ada lagu diputar</div>
+        <div id="status" class="status"></div>
+      </div>
+    </div>
+    <div class="seek">
+      <span id="waktuNow">0:00</span>
+      <input id="seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Posisi lagu">
+      <span id="waktuTotal">0:00</span>
+    </div>
+    <div class="kontrol">
+      <button id="acak" class="ikon kecil" aria-label="Acak" aria-pressed="false">⤮</button>
+      <button id="prev" class="ikon" aria-label="Sebelumnya">⏮</button>
+      <button id="play" class="ikon besar" aria-label="Putar">▶</button>
+      <button id="next" class="ikon" aria-label="Berikutnya">⏭</button>
+      <button id="ulang" class="ikon kecil" aria-label="Ulangi" aria-pressed="false">⟲</button>
+    </div>
+  </section>
+</div>
+<audio id="audio" preload="auto"></audio>
+<script src="app.js"></script>
+</body>
+</html>
