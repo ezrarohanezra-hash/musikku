@@ -1,4 +1,4 @@
-const CACHE = "musikku-v9";
+const CACHE = "musikku-v10";
 const SHELL = ["./", "index.html", "style.css", "app.js", "manifest.json",
   "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png"];
 
