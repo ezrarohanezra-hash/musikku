@@ -71,57 +71,24 @@ main{flex:1;overflow-y:auto;padding:0 20px 16px}
 body,.player,.item,#cari,.btn,.logo,.ikon.besar{transition:background-color .6s ease,color .6s ease}
 @media (prefers-reduced-motion:reduce){body,.player,.item,#cari,.btn,.logo,.ikon.besar{transition:none}}
 
-/* ---------- Slider ---------- */
-.garis{-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;cursor:pointer;
-  background:linear-gradient(to right,var(--teks) var(--p,0%),rgba(255,255,255,.22) var(--p,0%))}
-.garis::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--teks);border:0}
-.garis::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--teks);border:0}
-.garis::-moz-range-track{background:transparent}
-
-/* ---------- Pemutar layar penuh (gaya Apple Music) ---------- */
-.latar,.vol,.bawah,.antrean,#gantiFoto{display:none}
-.latar{background:linear-gradient(var(--surface2),var(--bg))}
+/* ---------- Pemutar layar penuh ---------- */
 .player.penuh{
-  position:fixed;inset:0;z-index:20;margin:0;border-radius:0;
-  display:flex;flex-direction:column;align-items:center;gap:18px;
-  background:var(--bg);overflow-y:auto;
-  padding:calc(56px + env(safe-area-inset-top)) 24px calc(20px + env(safe-area-inset-bottom));
+  position:fixed;inset:0;z-index:20;margin:0;border-radius:0;overflow-y:auto;
+  align-content:center;justify-items:center;gap:22px;
+  background:linear-gradient(var(--surface2),var(--bg) 70%);
+  padding:calc(64px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
 }
-.player.penuh > *{width:min(100%,520px);flex:none}
-.player.penuh .latar{display:block;position:fixed;inset:0;width:auto;z-index:-1;background-size:cover;background-position:center top}
-.player.penuh .latar::before{content:"";position:absolute;inset:0;
-  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
-  -webkit-mask-image:linear-gradient(to bottom,transparent 35%,#000 62%);mask-image:linear-gradient(to bottom,transparent 35%,#000 62%)}
-.player.penuh .latar::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,var(--bg) 88%)}
+.player.penuh > *{width:min(100%,520px)}
 .player.penuh #besar{position:absolute;top:calc(10px + env(safe-area-inset-top));left:14px;width:48px}
-.player.penuh #gantiFoto{display:grid;place-items:center;position:absolute;top:calc(10px + env(safe-area-inset-top));right:14px;
-  width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:var(--teks);font-size:1.15rem;cursor:pointer}
-.player.penuh .info{flex-direction:column;align-items:flex-start;gap:20px;margin-top:auto}
-.player.penuh .piringan{width:min(70vw,38vh,320px);height:min(70vw,38vh,320px);align-self:center;box-shadow:0 18px 50px rgba(0,0,0,.4)}
-.player.penuh .piringan.foto{display:none}
-.player.penuh .judul-wrap{flex:none;width:100%;text-align:left;cursor:default}
-.player.penuh .judul{white-space:normal;font-size:1.5rem;line-height:1.2}
-.player.penuh .seek{display:grid;grid-template-columns:1fr auto;row-gap:8px}
-.player.penuh .seek #seek{grid-column:1/-1;order:-1}
-.player.penuh .seek span{font-size:.75rem}
-.player.penuh .seek #waktuTotal{justify-self:end}
-.player.penuh .kontrol{gap:14px;justify-content:space-between}
-.player.penuh .ikon{width:60px;height:60px;font-size:2rem}
-.player.penuh .ikon.kecil{width:48px;height:48px;font-size:1.3rem}
-.player.penuh .ikon.besar{background:none;color:var(--teks);width:84px;height:84px;font-size:3rem}
-.player.penuh .vol{display:flex;align-items:center;gap:12px;color:var(--redup)}
-.player.penuh .vol.tak{display:none}
-.vol input{flex:1}
-.player.penuh .bawah{display:flex;justify-content:flex-end}
-.player.penuh .bawah .ikon[aria-pressed="true"]{background:var(--teks);color:var(--bg)}
-
-/* mode antrean */
-.player.penuh.antre .latar::before{-webkit-mask-image:none;mask-image:none}
-.player.penuh.antre .latar::after{background:var(--bg);opacity:.85}
-.player.penuh.antre .info{flex-direction:row;align-items:center;margin-top:0;gap:14px}
-.player.penuh.antre .piringan,.player.penuh.antre .piringan.foto{display:block;width:56px;height:56px;box-shadow:none}
-.player.penuh.antre .judul{font-size:1.05rem}
-.player.penuh.antre .antrean{display:block;flex:1;min-height:120px;overflow-y:auto;list-style:none;padding:0}
-.antrean::before{content:"Lanjut diputar";display:block;font-weight:700;margin-bottom:8px}
-.antrean li{padding:12px 8px;border-radius:10px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.antrean li:hover,.antrean li:focus-visible{background:rgba(255,255,255,.12)}
+.player.penuh .info{flex-direction:column;gap:24px}
+.player.penuh .piringan{
+  width:min(78vw,46vh,400px);height:min(78vw,46vh,400px);
+  border-radius:50%;
+  box-shadow:0 18px 50px rgba(0,0,0,.45)
+}
+.player.penuh .judul-wrap{flex:none;width:100%;text-align:center;cursor:default}
+.player.penuh .judul{white-space:normal;font-size:1.4rem;line-height:1.25}
+.player.penuh .status{margin-top:4px}
+.player.penuh .kontrol{gap:20px}
+.player.penuh .ikon.besar{width:76px;height:76px;font-size:2rem}
+.player.penuh .ikon{width:56px;height:56px}

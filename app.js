@@ -81,7 +81,6 @@ function render() {
     ul.appendChild(li);
   });
   $("kosong").hidden = lagu.length > 0;
-  if (pemutar.classList.contains("antre")) renderAntrean();
 }
 
 /* ---------- Putar ---------- */
@@ -124,16 +123,13 @@ audio.onended = () => (ulang ? (audio.currentTime = 0, audio.play()) : berikut(1
 audio.ontimeupdate = () => {
   if (!audio.duration) return;
   $("seek").value = (audio.currentTime / audio.duration) * 100;
-  $("seek").style.setProperty("--p", $("seek").value + "%");
   $("waktuNow").textContent = fmt(audio.currentTime);
   if ("mediaSession" in navigator && navigator.mediaSession.setPositionState) {
     try { navigator.mediaSession.setPositionState({ duration: audio.duration, position: audio.currentTime, playbackRate: audio.playbackRate }); } catch {}
   }
 };
 audio.onloadedmetadata = () => ($("waktuTotal").textContent = fmt(audio.duration));
-$("seek").oninput = (e) => { if (audio.duration) audio.currentTime = (e.target.value / 100) * audio.duration;
-  e.target.style.setProperty("--p", e.target.value + "%");
-};
+$("seek").oninput = (e) => { if (audio.duration) audio.currentTime = (e.target.value / 100) * audio.duration; };
 
 $("berkas").onchange = async (e) => {
   const files = [...e.target.files];
@@ -235,11 +231,9 @@ function tampilCover(l) {
   if (l && l.cover) {
     urlCover = URL.createObjectURL(l.cover);
     p.style.backgroundImage = `url("${urlCover}")`;
-    $("latar").style.backgroundImage = `url("${urlCover}")`;
     p.classList.add("foto");
   } else {
     p.style.backgroundImage = "";
-    $("latar").style.backgroundImage = "";
     p.classList.remove("foto");
   }
   terapkanTema(l && l.cover ? l.cover : null);
@@ -306,10 +300,6 @@ const pemutar = document.querySelector(".player");
 function bukaPenuh(buka) {
   if (pemutar.classList.contains("penuh") === buka) return;
   pemutar.classList.toggle("penuh", buka);
-  if (!buka) {
-    pemutar.classList.remove("antre");
-    $("antreBtn").setAttribute("aria-pressed", "false");
-  }
   document.body.style.overflow = buka ? "hidden" : "";
   $("besar").textContent = buka ? "⌄" : "⌃";
   $("besar").setAttribute("aria-label", buka ? "Perkecil pemutar" : "Perbesar pemutar");
@@ -324,43 +314,6 @@ window.addEventListener("popstate", () => bukaPenuh(false));
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && pemutar.classList.contains("penuh")) history.back();
 });
-
-/* ---------- Antrean, volume, tombol foto ---------- */
-function renderAntrean() {
-  const ul = $("antrean");
-  ul.textContent = "";
-  if (!tampil.length) return;
-  const mulai = idx < 0 ? 0 : idx + 1;
-  const n = idx < 0 ? tampil.length : tampil.length - 1;
-  for (let k = 0; k < n; k++) {
-    const i = (mulai + k) % tampil.length;
-    const li = document.createElement("li");
-    li.textContent = tampil[i].nama;
-    li.tabIndex = 0;
-    li.onclick = () => putar(i);
-    li.onkeydown = (e) => { if (e.key === "Enter") putar(i); };
-    ul.appendChild(li);
-  }
-}
-$("antreBtn").onclick = (e) => {
-  const on = pemutar.classList.toggle("antre");
-  e.currentTarget.setAttribute("aria-pressed", on);
-  if (on) renderAntrean();
-};
-$("gantiFoto").onclick = () => $("piringan").onclick();
-const volBisa = (() => {
-  const v = audio.volume;
-  audio.volume = 0.5;
-  const ok = audio.volume === 0.5;
-  audio.volume = v;
-  return ok;
-})();
-if (!volBisa) document.querySelector(".vol").classList.add("tak"); // iPhone: volume diatur tombol fisik
-$("vol").style.setProperty("--p", "100%");
-$("vol").oninput = (e) => {
-  audio.volume = +e.target.value;
-  e.target.style.setProperty("--p", e.target.value * 100 + "%");
-};
 
 /* ---------- Offline ---------- */
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
