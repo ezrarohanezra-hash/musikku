@@ -32,7 +32,8 @@ main{flex:1;overflow-y:auto;padding:0 20px 16px}
 .item.aktif{background:var(--surface2);box-shadow:inset 4px 0 0 var(--aksen)}
 .item .nama{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .item .ukuran{color:var(--redup);font-size:.8rem}
-.item .hapus{background:none;border:0;color:var(--redup);font-size:1.1rem;cursor:pointer;padding:6px 8px;border-radius:8px}
+.item .ubah,.item .hapus{background:none;border:0;color:var(--redup);font-size:1.1rem;cursor:pointer;padding:6px 8px;border-radius:8px}
+.item .ubah:hover{color:var(--aksen)}
 .item .hapus:hover{color:#ff8a8a}
 .kosong{color:var(--redup);text-align:center;padding:40px 10px;line-height:1.5}
 

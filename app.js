@@ -51,11 +51,26 @@ function render() {
     const li = document.createElement("li");
     li.className = "item" + (i === idx ? " aktif" : "");
     li.tabIndex = 0;
-    li.innerHTML = '<span class="nama"></span><span class="ukuran"></span><button class="hapus" aria-label="Hapus lagu">✕</button>';
+    li.innerHTML = '<span class="nama"></span><span class="ukuran"></span><button class="ubah" aria-label="Ubah nama lagu">✎</button><button class="hapus" aria-label="Hapus lagu">✕</button>';
     li.querySelector(".nama").textContent = l.nama;
     li.querySelector(".ukuran").textContent = mb(l.ukuran);
     li.addEventListener("click", () => putar(i));
     li.addEventListener("keydown", (e) => { if (e.key === "Enter") putar(i); });
+    li.querySelector(".ubah").addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const baru = prompt("Ubah nama lagu:", l.nama);
+      if (baru === null) return;
+      const nama = baru.trim();
+      if (!nama || nama === l.nama) return;
+      l.nama = nama;
+      await ubah(l);
+      if (i === idx) {
+        $("judul").textContent = nama;
+        document.title = nama + " · Musikku";
+        setMeta(l);
+      }
+      await muat();
+    });
     li.querySelector(".hapus").addEventListener("click", async (e) => {
       e.stopPropagation();
       if (!confirm("Hapus “" + l.nama + "” dari aplikasi?")) return;
